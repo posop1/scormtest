@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - PORT=${PORT}
+    restart: unless-stopped
+    container_name: lms-second-${COMPOSE_PROFILES}
+    networks:
+      - traefik-net
+      - default
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.${LMS_SERVICE}.entrypoints=https'
+      - 'traefik.http.routers.${LMS_SERVICE}.rule=Host(`${HOST}`)'
+      - 'traefik.http.services.${LMS_SERVICE}.loadbalancer.server.port=80'
+      - 'traefik.http.routers.${LMS_SERVICE}.tls=true'
+      - 'traefik.http.routers.${LMS_SERVICE}.tls.certresolver=letsEncrypt'
+      - 'traefik.http.routers.${LMS_SERVICE}.middlewares=traefik-compress'
+      - 'traefik.http.middlewares.traefik-compress.compress=true'
+      - 'traefik.docker.network=traefik-net'
+networks:
+  traefik-net:
+    external: true
