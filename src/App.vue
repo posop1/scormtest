@@ -13,6 +13,7 @@ onMounted(async () => {
   };
 
   try {
+    // @ts-ignore
     window.API = {
       ...new Scorm12API(settings),
       cmi: {
