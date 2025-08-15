@@ -4,7 +4,7 @@ import { nextTick, onMounted, ref } from 'vue';
 
 const isLoading = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   isLoading.value = true;
 
   const settings = {
@@ -12,25 +12,31 @@ onMounted(() => {
     autocommit: true,
   };
 
-  // @ts-ignore
-  window.API = {
-    ...new Scorm12API(settings),
-    cmi: {
-      ...new Scorm12API(settings).cmi,
-      core: {
-        ...new Scorm12API(settings).cmi.core,
-        student_id: '43',
-        student_name: 'postop pposdf',
-        credit: 'credit',
-        entry: 'ab-initio',
-        lesson_status: 'incomplete',
+  try {
+    window.API = {
+      ...new Scorm12API(settings),
+      cmi: {
+        ...new Scorm12API(settings).cmi,
+        core: {
+          ...new Scorm12API(settings).cmi.core,
+          student_id: '43',
+          student_name: 'postop pposdf',
+          credit: 'credit',
+          entry: 'ab-initio',
+          lesson_status: 'incomplete',
+        },
+        suspend_data: '',
       },
-      suspend_data: '',
-    },
-  };
+    };
+  } catch (error) {
+    console.log(error);
+  }
+  // @ts-ignore
 
   nextTick();
-  isLoading.value = false;
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 5000);
 });
 
 console.log(window);
@@ -42,7 +48,6 @@ console.log(window);
     id="scorm-wrapper"
     style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 4px">
     <iframe
-      class="iframe"
       src="https://sa.eu.brusnika-apps.com//local/scorm/artur.yakhin52@gmail.com/9738/index.html"
       frameborder="0"
       allowfullscreen
@@ -50,6 +55,7 @@ console.log(window);
       height="100%"
       title="SCORM контент"></iframe>
   </div>
+  <div v-else>loading</div>
 </template>
 
 <style scoped></style>
