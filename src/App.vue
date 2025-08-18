@@ -4,40 +4,48 @@ import { nextTick, onMounted, ref } from 'vue';
 
 const isLoading = ref(false);
 
-onMounted(async () => {
-  isLoading.value = true;
-
+const initScorm = async () => {
   const settings = {
     logLevel: 1,
     autocommit: true,
   };
 
+  // const scormVersion = 'API';
+
   try {
-    // @ts-ignore
-    window.API = {
-      ...new Scorm12API(settings),
-      cmi: {
-        ...new Scorm12API(settings).cmi,
-        core: {
-          ...new Scorm12API(settings).cmi.core,
-          student_id: '43',
-          student_name: 'postop pposdf',
-          credit: 'credit',
-          entry: 'ab-initio',
-          lesson_status: 'incomplete',
-        },
-        suspend_data: '',
-      },
-    };
+    await new Promise(() => {
+      // @ts-ignore
+      window.API = new Scorm12API(settings);
+
+      // @ts-ignore
+      window.API.cmi.core.student_id = '43';
+      // @ts-ignore
+      window.API.cmi.core.student_name = 'pos pos';
+      // @ts-ignore
+      window.API.cmi.core.credit = 'credit';
+      // @ts-ignore
+      window.API.cmi.core.entry = 'ab-initio';
+
+      // @ts-ignore
+      window.API.cmi.core.lesson_status = 'incomplete';
+      // @ts-ignore
+      window.API.cmi.suspend_data = ''; //scormData.suspend_data ? atob(scormData.suspend_data) : "";
+
+      // @ts-ignore
+      console.log('Итоговая модель CMI перед запуском курса:', window.API.cmi);
+    });
+  } catch (error) {}
+};
+
+onMounted(async () => {
+  isLoading.value = true;
+
+  try {
+    initScorm();
   } catch (error) {
     console.log(error);
   }
-  // @ts-ignore
-
-  nextTick();
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 5000);
+  isLoading.value = false;
 });
 
 console.log(window);
